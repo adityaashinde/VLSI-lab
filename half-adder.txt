@@ -1,0 +1,236 @@
+Experiment no 1 :
+
+HA
+
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+
+entity adder is
+    Port ( a : in  STD_LOGIC;
+           b : in  STD_LOGIC;
+           s : out  STD_LOGIC;
+           c : out  STD_LOGIC);
+end adder;
+
+architecture Behavioral of adder is
+
+begin
+
+s<=a xor b;
+c<=a and b;
+
+end Behavioral;
+
+USR(SHIFT REGISTER) :
+
+
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+
+entity shiftr is
+    Port ( si : in STD_LOGIC;
+	        clk : in  STD_LOGIC;
+           so : out  STD_LOGIC;
+           pin : in  STD_LOGIC_VECTOR(3 downto 0);
+           po : out  STD_LOGIC;
+           sel : in  STD_LOGIC_VECTOR(1 downto 0));
+end shiftr;
+
+architecture Behavioral of shiftr is
+
+signal temp:STD_LOGIC_VECTOR(3 downto 0);
+
+begin
+
+process(clk)
+
+begin
+
+if(clk'event and clk='1') then
+case sel is
+
+when"00"=>temp<=si&temp(3 downto 1);
+so<=temp(3);
+when"01"=>temp<=si&temp(3 downto 1);
+po<=temp(3);
+when others=>null;
+
+end case;
+end if;
+end process;
+
+end Behavioral;
+
+----------------------TESTBENCH USR(SHIFT REGISTER) :
+
+
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+ 
+
+ENTITY usr IS
+END usr;
+ 
+ARCHITECTURE behavior OF usr IS 
+ 
+    -- Component Declaration for the Unit Under Test (UUT)
+ 
+    COMPONENT shiftr
+    PORT(
+         si : IN  std_logic;
+         clk : IN  std_logic;
+         so : OUT  std_logic;
+         pin : IN  std_logic_vector(3 downto 0);
+         po : OUT  std_logic;
+         sel : IN  std_logic_vector(1 downto 0)
+        );
+    END COMPONENT;
+    
+
+   --Inputs
+   signal si : std_logic := '0';
+   signal clk : std_logic := '0';
+   signal pin : std_logic_vector(3 downto 0) := (others => '0');
+   signal sel : std_logic_vector(1 downto 0) := (others => '0');
+
+ 	--Outputs
+   signal so : std_logic;
+   signal po : std_logic;
+
+   -- Clock period definitions
+   constant clk_period : time := 10 ns;
+ 
+BEGIN
+ 
+	-- Instantiate the Unit Under Test (UUT)
+   uut: shiftr PORT MAP (
+          si => si,
+          clk => clk,
+          so => so,
+          pin => pin,
+          po => po,
+          sel => sel
+        );
+
+--    Clock process definitions
+   clk_process :process
+   begin
+		clk <= '0';
+		wait for clk_period/2;
+		clk <= '1';
+		wait for clk_period/2;
+   end process;
+ 
+
+   -- Stimulus process
+   stim_proc: process
+   begin	
+
+		sel<="00";
+		si<='1';	
+      -- hold reset state for 100 ns.
+      wait for 100 ns;	
+		
+		sel<="01";
+      si<='1';
+		
+		wait for 100 ns;	
+		
+		sel<="10";
+      pin<="1100";
+		
+		wait for 100 ns;	
+		
+		sel<="11";
+      pin<="1100";
+
+--      wait for clk_period*10;
+
+      -- insert stimulus here 
+
+      wait;
+   end process;
+
+END;
+
+
+
+
+
+----------------HA TESTBENCH :
+
+
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+ 
+ENTITY hadder1 IS
+END hadder1;
+ 
+ARCHITECTURE behavior OF hadder1 IS 
+ 
+    -- Component Declaration for the Unit Under Test (UUT)
+ 
+    COMPONENT adder
+    PORT(
+         a : IN  std_logic;
+         b : IN  std_logic;
+         s : OUT  std_logic;
+         c : OUT  std_logic
+        );
+    END COMPONENT;
+    
+
+   --Inputs
+   signal a : std_logic := '0';
+   signal b : std_logic := '0';
+
+ 	--Outputs
+   signal s : std_logic;
+   signal c : std_logic;
+ 
+BEGIN
+ 
+	-- Instantiate the Unit Under Test (UUT)
+   uut: adder PORT MAP (
+          a => a,
+          b => b,
+          s => s,
+          c => c
+        );
+
+   -- Stimulus process
+   stim_proc: process
+   begin		
+	
+	a<='0';
+	b<='0';
+      -- hold reset state for 100 ns.
+      wait for 100 ns;	
+		
+		a<='0';
+	   b<='1';
+		
+		wait for 100 ns;	
+		
+		a<='1';
+	   b<='0';
+		
+		wait for 100 ns;	
+		
+		a<='1';
+	   b<='1';
+		
+		wait for 100 ns;
+
+--      wait for <clock>_period*10;
+
+      -- insert stimulus here 
+
+      wait;
+   end process;
+
+END;
+
+
